@@ -1,234 +1,446 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Shlok's Portfolio</title>
+  <meta name="description" content="Shlok — EEE Undergrad | Embedded C | Proficient in C | MATLAB , PROTEUS | Visual Editor | Project planning and Leadership" />
+
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #000;
-      color: #ffffff;
-      overflow-x: hidden;
+    :root{
+      --bg:#000;
+      --fg:#e6f9fb;
+      --muted:#aaa;
+      --accent:#00ffff;
+      --accent-2:#00bfff;
+      --card-bg: rgba(255,255,255,0.03);
+      --glass: rgba(255,255,255,0.04);
+      --radius:14px;
+      --max-width:1200px;
+      --nav-height:72px;
+      --transition:250ms cubic-bezier(.2,.9,.3,1);
+      --blur: 8px;
     }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+      background: linear-gradient(135deg,#003644 0%, #000000 60%, #001018 100%);
+      color:var(--fg);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden;
+      line-height:1.45;
+    }
+    #bg-video{
+      position:fixed;
+      inset:0;
+      width:100vw;
+      height:100vh;
+      object-fit:cover;
+      z-index:-2;
+      filter:brightness(.38) contrast(.95);
+    }
+    .bg-overlay{
+      position:fixed;
+      inset:0;
+      background:linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.55));
+      z-index:-1;
+      pointer-events:none;
+    }
+    .container{ max-width:var(--max-width); margin:0 auto; padding:0 28px; }
+    nav{
+      height:var(--nav-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      position:sticky;
+      top:0;
+      z-index:1000;
+      backdrop-filter:blur(var(--blur));
+      background:rgba(0,0,0,0.4);
+    }
+    .brand{ display:flex; align-items:center; gap:12px; font-weight:700; font-size:18px; color:var(--fg) }
+    .brand .dot{ width:10px;height:10px;border-radius:50%; background:linear-gradient(90deg,var(--accent),var(--accent-2)); }
+    .nav-links{ display:flex; align-items:center; gap:14px }
+    .nav-links a{ color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:8px }
+    .nav-links a:hover{ color:var(--accent); background:rgba(0,255,255,0.03) }
+    .cta{ padding:10px 14px; border-radius:10px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#001; font-weight:700; text-decoration:none }
 
-    #bg-video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      min-width: 100vw;
-      min-height: 100vh;
-      object-fit: cover;
-      z-index: -1;
-      filter: brightness(0.4);
-    }
+    header.hero{ padding:60px 0 40px; display:flex; gap:40px; min-height:68vh; align-items:center }
+    .hero-left{ flex:1 1 520px; max-width:720px }
+    .eyebrow{ display:inline-block; color:var(--accent); padding:6px 10px; border-radius:999px; background:rgba(0,255,255,0.03) }
+    .hero-left h1{ margin:6px 0 12px; font-size: clamp(26px, 4.2vw, 44px); background: linear-gradient(90deg,var(--accent),var(--accent-2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-weight:800; }
+    .hero-left p.lead{ color:var(--muted); font-size:16px; max-width:58ch }
+    .hero-actions{ display:flex; gap:12px; flex-wrap:wrap; align-items:center }
+    .btn-outline{ padding:10px 16px; border-radius:10px; border:2px solid rgba(0,255,255,0.18); color:var(--accent); text-decoration:none }
+    .btn-primary{ padding:10px 18px; border-radius:10px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#001; text-decoration:none }
 
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 60px;
-      background: rgba(0, 0, 0, 0.4);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
+    .hero-right{ width:340px; flex:0 0 340px }
+    .profile-card{ padding:14px; border-radius:20px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04) }
+    .profile-card img{ width:100%; border-radius:12px; border:3px solid rgba(0,255,255,0.08) }
 
-    nav a {
-      color: #ccc;
-      margin-left: 30px;
-      text-decoration: none;
-      font-weight: 500;
-    }
+    section{ padding:64px 0 }
+    .section-title{ font-size:20px; color:var(--accent); margin-bottom:12px; font-weight:700 }
 
-    nav a:hover {
-      color: #00ffff;
+    /* Projects modal / panel */
+    .projects-panel{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,0.7);
+      z-index:2000;
+      padding:28px;
+      visibility:hidden;
+      opacity:0;
+      transition:opacity .22s ease, visibility .22s ease;
     }
+    .projects-panel.open{ visibility:visible; opacity:1 }
+    .projects-card{
+      width:min(1100px, 96%);
+      max-height:90vh;
+      overflow:auto;
+      border-radius:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:18px;
+      border:1px solid rgba(255,255,255,0.04);
+    }
+    .projects-grid{ display:grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap:14px }
+    .project-tile{
+      position:relative;
+      height:220px;
+      border-radius:10px;
+      overflow:hidden;
+      display:flex; align-items:flex-end;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,0.03);
+      background:#111;
+    }
+    .project-tile img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:brightness(.6); transition:transform .35s ease }
+    .project-tile:hover img{ transform:scale(1.04) }
+    .project-overlay{
+      position:relative; z-index:2; padding:14px; width:100%; color:var(--fg);
+      background: linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.45));
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .project-title{ font-size:18px; font-weight:800; text-shadow:0 6px 18px rgba(0,0,0,0.6) }
+    .project-download{ padding:8px 12px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#001; border-radius:8px; text-decoration:none; font-weight:700 }
 
-    section {
-      padding: 100px 60px;
-    }
+    .projects-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px }
+    .close-projects{ background:transparent; border:0; color:var(--muted); font-weight:700; cursor:pointer }
 
-    .hero {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 80px;
-    }
-
-    .hero-text {
-      max-width: 600px;
-    }
-
-    .hero-text h1 {
-      font-size: 48px;
-      background: linear-gradient(90deg, #00ffff, #00bfff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin: 0;
-    }
-
-    .hero-text h2 {
-      color: #fff;
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    .hero-text p {
-      color: #aaa;
-      font-size: 18px;
-      line-height: 1.6;
-      margin: 20px 0;
-    }
-
-    .buttons {
-      margin-top: 20px;
-    }
-
-    .download-cv {
-      display: inline-block;
-      padding: 10px 20px;
-      border: 2px solid #00ffff;
-      background: transparent;
-      color: #00ffff;
-      border-radius: 6px;
-      text-decoration: none;
-      margin-bottom: 15px;
-    }
-
-    .download-cv:hover {
-      background: #00ffff;
-      color: #000;
-    }
-
-    .social {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .social a {
-      padding: 8px 16px;
-      border: 2px solid #00ffff;
-      color: #00ffff;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 16px;
-    }
-
-    .social a:hover {
-      background: #00ffff;
-      color: #000;
-    }
-
-    .hero-image img {
-      width: 300px;
-      height: auto;
-      border-radius: 20px;
-      border: 3px solid #00ffff;
-    }
-
-    h2.section-title {
-      font-size: 32px;
-      color: #00ffff;
-      margin-bottom: 30px;
-    }
-
-    .hire-button {
-      display: inline-block;
-      padding: 12px 24px;
-      background: #00ffff;
-      color: #000;
-      border-radius: 6px;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
-    .hire-button:hover {
-      background: #00ccff;
-    }
+    @media (max-width:880px){ .hero-right{ display:none } .project-tile{ height:160px } }
   </style>
 </head>
 <body>
-  <video autoplay muted loop id="bg-video">
-    <source src="yes.mp4" type="video/mp4">
-    Your browser does not support the video tag.
+  <video id="bg-video" autoplay muted loop playsinline poster="fallback.jpg" aria-hidden="true" style="opacity:0.35;">
+    <source src="vidbg.mp4" type="video/mp4">
+    <img onerror="this.onerror=null;this.src='fallback.jpg';" src="fallback.jpg" alt="Background" />
   </video>
+  <div class="bg-overlay" aria-hidden="true"></div>
 
-  <nav>
-    <div style="font-weight: bold; font-size: 24px;">Shlok's Portfolio</div>
-    <div>
-      <a href="#services">Services</a>
-      <a href="#works">Works</a>
-      <a href="#resume">Resume</a>
+  <nav class="container" role="navigation">
+    <div class="brand"><span class="dot" aria-hidden="true"></span>Shlok's Portfolio</div>
+    <div class="nav-links">
+      
+      
+      <a href="#projectsBtn" id="projectsBtn">Projects</a>
+      
       <a href="#skills">Skills</a>
       <a href="#testimonials">Testimonials</a>
       <a href="#contact">Contact</a>
-      <a href="#contact" class="hire-button">Hire Me!</a>
+      <a class="cta" href="#contact">Hire Me!</a>
     </div>
   </nav>
 
-  <section class="hero">
-    <div class="hero-text">
-      <h2>I am Shlok</h2>
-      <h1>EEE Undergrad | Embedded C Engineer | Proficient in C | MATLAB | Visual Editor | Project Planning and Leadership</h1>
-      <p>"I build in silence, but every project I finish speaks volumes.
-My path isn’t fast — it’s focused. </p>
-      <div class="buttons">
-        <a class="download-cv" href="shlokcv.docx" download>Download CV</a>
-        <div class="social">
-         <a href="https://www.linkedin.com/in/shlok-kumar-b9b17b364" target="_blank">LinkedIn</a>
-           <a href="https://github.com/Shlokkumar18" target="_blank">GitHub</a>
-          <a href="https://www.instagram.com/whyshlok_/?utm_source=ig_web_button_share_sheet" target="_blank">Instagram</a>  
-         
+  <main class="container">
+    <header class="hero">
+      <div class="hero-left">
+        <div class="eyebrow">EEE Undergrad · Embedded Systems</div>
+        <h1>I am Shlok — EEE Undergrad | Embedded C | Proficient in C | MATLAB , PROTEUS | Visual Editor | Project Planning and Leadership
+</h1>
+        <p class="lead">I design efficient embedded systems and hardware prototypes using Arduino , ESP32 and STM MCUs, Proteus , Data processing and visualizations, and strong project planning.</p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="shlokcv.docx" download>Download CV</a>
+          
+          <a class="btn-outline" id="openProjectsHero">Projects</a>
         </div>
       </div>
+
+      <div class="hero-right">
+        <div class="profile-card">
+          <img onerror="this.onerror=null;this.src='fallback.jpg';" src="shlokimage.jpeg" alt="Shlok portrait" />
+        </div>
+      </div>
+    </header>
+
+    <!-- Background Video Placeholder -->
+    
+
+    
+
+<section id="skills">
+      <h2 class="section-title">Skills</h2>
+      <div style="margin-top:18px; display:grid; gap:22px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+
+        <!-- Core Embedded Skills -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">🔧 Core Embedded Skills</h3>
+          <ul style="color:var(--muted); line-height:1.55; margin:0; padding-left:18px;">
+            <li>Embedded C (Drivers, ISRs, Peripherals)</li>
+            <li>8051 & STM32 Bare-Metal Programming</li>
+            <li>Timers, Interrupts, ADC, PWM</li>
+            <li>Sensor Interfacing: IR, Ultrasonic (HC-SR04), LM35</li>
+            <li>Display Interfaces: 7-Segment, LCD 16×2, I²C LCD</li>
+          </ul>
+        </div>
+
+        <!-- Communication Protocols -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">📡 Communication Protocols</h3>
+          <ul style="color:var(--muted); line-height:1.55; margin:0; padding-left:18px;">
+            <li>UART, I²C, SPI (basic)</li>
+          </ul>
+        </div>
+
+        <!-- Microcontroller Platforms -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">🧩 Microcontroller Platforms</h3>
+          <ul style="color:var(--muted); line-height:1.55; margin:0; padding-left:18px;">
+            <li>8051</li>
+            <li>STM32 (GPIO, Timers, ADC, I²C)</li>
+            <li>Arduino, ESP32</li>
+          </ul>
+        </div>
+
+        <!-- Development Tools -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">🛠 Development Tools</h3>
+          <ul style="color:var(--muted); line-height:1.55; margin:0; padding-left:18px;">
+            <li>Keil µVision, Proteus 8</li>
+            <li>STM32CubeIDE</li>
+            <li>Arduino IDE</li>
+            <li>VS Code</li>
+          </ul>
+        </div>
+
+        <!-- Simulation & Modeling -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">📊 Simulation & Modeling</h3>
+          <ul style="color:var(--muted); line-height:1.55; margin:0; padding-left:18px;">
+            <li>MATLAB & Simulink (Onramp level)</li>
+          </ul>
+        </div>
+
+        <!-- Additional Skills -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">📋 Additional Skills</h3>
+          <ul style="color:var(--muted); line-height:1.55; margin:0; padding-left:18px;">
+            <li>Project documentation</li>
+            <li>Basic PCB workflow</li>
+            <li>Photo / video editing</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="services">
+      <h2 class="section-title">Services</h2>
+
+      <div style="margin-top:18px; display:grid; gap:24px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr));">
+
+        <!-- 1 -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">1. Embedded System Development</h3>
+          <ul style="color:var(--muted); line-height:1.55; padding-left:18px; margin:0;">
+            <li>8051, STM32, Arduino, ESP32 based system design</li>
+            <li>Timer, interrupt, ADC, PWM–based feature implementation</li>
+            <li>Sensor integration (IR, ultrasonic, temperature, etc.)</li>
+          </ul>
+        </div>
+
+        <!-- 2 -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">2. Circuit Simulation & Prototyping</h3>
+          <ul style="color:var(--muted); line-height:1.55; padding-left:18px; margin:0;">
+            <li>Designing and testing circuits in Proteus 8</li>
+            <li>Working simulations for student projects & prototypes</li>
+            <li>Basic PCB workflow guidance</li>
+          </ul>
+        </div>
+
+        <!-- 3 -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">3. Microcontroller Programming</h3>
+          <ul style="color:var(--muted); line-height:1.55; padding-left:18px; margin:0;">
+            <li>C / Embedded C firmware development</li>
+            <li>Driver-level coding (GPIO, Timers, ADC, I²C LCD)</li>
+            <li>Interrupt-driven logic & real-time control</li>
+          </ul>
+        </div>
+
+        <!-- 4 -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">4. Automation & Control Projects</h3>
+          <ul style="color:var(--muted); line-height:1.55; padding-left:18px; margin:0;">
+            <li>Traffic light systems</li>
+            <li>Intrusion alert systems</li>
+            <li>Servo/DC motor control</li>
+            <li>Radar & scan-based systems (HC-SR04 + servo)</li>
+          </ul>
+        </div>
+
+        <!-- 5 -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">5. Data Processing & Visualization</h3>
+          <ul style="color:var(--muted); line-height:1.55; padding-left:18px; margin:0;">
+            <li>CSV data creation for sensor readings</li>
+            <li>MCU-to-PC serial data visualization</li>
+            <li>Basic Python automation scripts</li>
+          </ul>
+        </div>
+
+        <!-- 6 -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">6. MATLAB & Simulink Models (Beginner–Intermediate)</h3>
+          <ul style="color:var(--muted); line-height:1.55; padding-left:18px; margin:0;">
+            <li>Basic simulation models</li>
+            <li>Control logic blocks</li>
+            <li>Signal processing fundamentals</li>
+          </ul>
+        </div>
+
+        <!-- 7 -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">7. Technical Documentation</h3>
+          <ul style="color:var(--muted); line-height:1.55; padding-left:18px; margin:0;">
+            <li>Project reports</li>
+            <li>Code documentation</li>
+            <li>Abstracts, block diagrams & workflow charts</li>
+          </ul>
+        </div>
+
+        <!-- 8 -->
+        <div>
+          <h3 style="margin:0 0 10px 0; color:var(--accent); font-size:17px;">8. Project Consulting / Student Assistance</h3>
+          <ul style="color:var(--muted); line-height:1.55; padding-left:18px; margin:0;">
+            <li>Helping juniors with embedded & Arduino projects</li>
+            <li>Suggesting architectures, components & debugging steps</li>
+            <li>Improving or correcting existing student projects</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="testimonials">
+      <h2 class="section-title">Testimonials</h2>
+      <p style="color:var(--muted)">"Shlok's embedded logic and execution blew us away." – A Classmate</p>
+    </section>
+
+    <section id="contact">
+      <h2 class="section-title">Contact</h2>
+      <p style="color:var(--muted)">Email: <a href="mailto:talkwithshlok@gmail.com" style="color:var(--accent)">talkwithshlok@gmail.com</a></p>
+    </section>
+  </main>
+
+  <footer class="container">© Shlok Kumar · Embedded Systems</footer>
+
+  <!-- Projects modal/panel -->
+  <div class="projects-panel" id="projectsPanel" aria-hidden="true">
+    <div class="projects-card" role="dialog" aria-modal="true" aria-labelledby="projectsTitle">
+      <div class="projects-header">
+        <h3 id="projectsTitle" style="margin:0; color:var(--fg)">Projects</h3>
+        <div>
+          <button class="close-projects" id="closeProjects">Close ✕</button>
+        </div>
+      </div>
+
+      <div class="projects-grid">
+        <!-- Project 1 -->
+        <div class="project-tile" data-pdf="projects/arduino.pdf">
+          <img onerror="this.onerror=null;this.src='fallback.jpg';" src="projects/arduino.png" alt="Arduino journey and the Car">
+          <div class="project-overlay">
+            <div class="project-title">Arduino journey and the Car</div>
+            <a class="project-download" href="projects/arduino.pdf" download>Download PDF</a>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="project-tile" data-pdf="projects/fluxcharge.pdf">
+          <img onerror="this.onerror=null;this.src='fallback.jpg';" src="projects/fluxcharge.jpg" alt="Fluxcharge">
+          <div class="project-overlay">
+            <div class="project-title">FluxCharge</div>
+            <a class="project-download" href="projects/fluxcharge.pdf" download>Download PDF</a>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="project-tile" data-pdf="projects/Ruralgrid.pdf">
+          <img onerror="this.onerror=null;this.src='fallback.jpg';" src="projects/ruralgrid.jpg" alt="Ruralgrid+">
+          <div class="project-overlay">
+            <div class="project-title">Ruralgrid+</div>
+            <a class="project-download" href="projects/Ruralgrid.pdf" download>Download PDF</a>
+          </div>
+        </div>
+
+        <!-- Project 4 -->
+        <div class="project-tile" data-pdf="projects/solartracker.pdf">
+          <img onerror="this.onerror=null;this.src='fallback.jpg';" src="projects/Solar%20tracker.png" alt="Solar tracker with GPS">
+          <div class="project-overlay">
+            <div class="project-title">Solar tracker with GPS</div>
+            <a class="project-download" href="projects/solartracker.pdf" download>Download PDF</a>
+          </div>
+        </div>
+
+      </div>
     </div>
-    <div class="hero-image">
-      <img src="shlokimage.jpeg" alt="Shlok" />
-<div style="display: flex; align-items: center; gap: 8px; margin-top: 20px;">
-    <a href="PSIUB.pptx" download>
-        <img src="buttonicon.jpg" alt="Download" style="width:50px; height:50px; cursor:pointer;">
-    </a>
-    <span style="font-size: 21px; font-weight: bold;">see my new project</span>
-</div>
-</div>
-  </section>
+  </div>
+    </div>
+  </div>
 
-  <section id="services">
-    <h2 class="section-title">Services</h2>
-    <p>Microcontroller and standard c Programming, Embedded Systems Design, Circuit Simulation, UI Prototyping, and Custom Project Planning</p>
-  </section>
+  <script>
+    // open/close projects panel
+    const projectsPanel = document.getElementById('projectsPanel');
+    const openBtn = document.getElementById('projectsBtn');
+    const openHero = document.getElementById('openProjectsHero');
+    const closeBtn = document.getElementById('closeProjects');
 
-  <section id="works">
-    <h2 class="section-title">Works</h2>
-    <p>Multiple projects using 8051 | UI Designs | Hardware Project Visualizations</p>
-  </section>
+    function openProjects(){ projectsPanel.classList.add('open'); projectsPanel.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+    function closeProjects(){ projectsPanel.classList.remove('open'); projectsPanel.setAttribute('aria-hidden','true'); document.body.style.overflow='auto'; }
 
-  <section id="resume">
-    <h2 class="section-title">Resume</h2>
-    <p>Download full CV <a href="shlokcv.docx" style="color:#00ffff; text-decoration:underline;">here</a>.</p>
-  </section>
+    openBtn && openBtn.addEventListener('click', (e)=>{ e.preventDefault(); openProjects(); });
+    openHero && openHero.addEventListener('click', openProjects);
+    closeBtn && closeBtn.addEventListener('click', closeProjects);
 
-  <section id="skills">
-    <h2 class="section-title">Skills</h2>
-    <p>C | Embedded C | 8051 | Proteus | Keil | MATLAB | Python | Version Control | Creative Direction</p>
-  </section>
+    // allow clicking a tile to trigger download as well
+    document.querySelectorAll('.project-tile').forEach(tile=>{
+      tile.addEventListener('click', (e)=>{
+        // if clicked download link, let the default anchor work
+        if(e.target.closest('a')) return;
+        const pdf = tile.getAttribute('data-pdf');
+        if(pdf){
+          // create temporary link to trigger download
+          const a = document.createElement('a');
+          a.href = pdf;
+          a.download = pdf.split('/').pop();
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(()=>a.remove(), 600);
+        }
+      });
+    });
 
-  <section id="testimonials">
-    <h2 class="section-title">Testimonials</h2>
-    <p>"Shlok's embedded logic and execution blew us away." – A Classmate<br>
-       "Reliable and solution-focused guy – highly recommended." – Project Partner</p>
-  </section>
+    // close on ESC
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeProjects(); });
 
-  <section id="contact">
-    <h2 class="section-title">Contact</h2>
-    <p>Email: talkwithshlok@gmail.com<br>
-       LinkedIn: <a href="https://www.linkedin.com/in/shlok-kumar-b9b17b364" style="color:#00ffff; text-decoration:underline;">Visit Profile</a>
-    </p>
-  </section>
+    // click outside card to close
+    projectsPanel.addEventListener('click', (e)=>{ if(e.target === projectsPanel) closeProjects(); });
+  </script>
 </body>
 </html>
