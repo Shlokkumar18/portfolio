@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
   <title>Shlok's Portfolio</title>
   <meta name="description" content="Shlok — EEE Undergrad | Embedded C | Proficient in C | MATLAB , PROTEUS | Visual Editor | Project planning and Leadership" />
 
@@ -143,6 +143,31 @@
     .close-projects{ background:transparent; border:0; color:var(--muted); font-weight:700; cursor:pointer }
 
     @media (max-width:880px){ .hero-right{ display:none } .project-tile{ height:160px } }
+  
+    /* Additional responsive & mobile-optimizations added by Jarvis */
+
+    html{scroll-behavior:smooth}
+    body{ -webkit-tap-highlight-color: transparent }
+
+    /* Mobile menu behavior */
+    .menu-toggle{ display:none }
+    @media (max-width:720px){
+      .menu-toggle{ display:inline-flex }
+      .nav-links{ display:none }
+      .nav-links.open{ display:flex; position:absolute; right:12px; top:72px; background:rgba(0,0,0,0.75); padding:12px; border-radius:10px; flex-direction:column; gap:8px; z-index:1500 }
+    }
+
+    /* Make project modal full screen on small devices */
+    @media (max-width:720px){
+      .projects-card{ width:100%; height:100vh; max-height:100vh; border-radius:0; padding:12px }
+      .projects-grid{ grid-template-columns:1fr }
+      .project-tile{ height:200px }
+      #bg-video{ opacity:0.14; filter:brightness(.6) }
+    }
+
+    /* Ensure images are visible and centered */
+    .project-tile img{ object-position:center center }
+
   </style>
 </head>
 <body>
@@ -414,9 +439,6 @@
       </div>
     </div>
   </div>
-    </div>
-  </div>
-
   <script>
     // open/close projects panel
     const projectsPanel = document.getElementById('projectsPanel');
