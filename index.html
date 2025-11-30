@@ -179,11 +179,12 @@
 
   <nav class="container" role="navigation">
     <div class="brand"><span class="dot" aria-hidden="true"></span>Shlok's Portfolio</div>
-    <div class="nav-links">
-      
-      
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" style="background:none;border:0;color:var(--fg);padding:8px;display:none;">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="nav-links" id="primaryLinks">
       <a href="#projectsBtn" id="projectsBtn">Projects</a>
-      
       <a href="#skills">Skills</a>
       <a href="#testimonials">Testimonials</a>
       <a href="#contact">Contact</a>
@@ -476,6 +477,39 @@
 
     // click outside card to close
     projectsPanel.addEventListener('click', (e)=>{ if(e.target === projectsPanel) closeProjects(); });
+
+    // --- HUD: Mobile hamburger menu behavior ---
+    const menuToggle = document.getElementById('menuToggle');
+    const primaryLinks = document.getElementById('primaryLinks');
+
+    // show hamburger only on small screens (redundant safety)
+    function updateMenuToggleVisibility(){
+      if(window.innerWidth <= 720){
+        menuToggle.style.display = 'inline-flex';
+      } else {
+        menuToggle.style.display = 'none';
+        primaryLinks.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded','false');
+      }
+    }
+    updateMenuToggleVisibility();
+    window.addEventListener('resize', updateMenuToggleVisibility);
+
+    menuToggle.addEventListener('click', ()=>{
+      const isOpen = primaryLinks.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    // close mobile menu when clicking outside
+    document.addEventListener('click', (e)=>{
+      if(window.innerWidth > 720) return; // only for mobile
+      if(!primaryLinks.classList.contains('open')) return;
+      const target = e.target;
+      if(!target.closest('.nav-links') && !target.closest('#menuToggle')){
+        primaryLinks.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded','false');
+      }
+    });
   </script>
 </body>
 </html>
